@@ -28,7 +28,7 @@
   
   (unless (and path anchor)
     (error 'extract-docstring "Unable to find specific-enough documentation"))
-  
+    
   ;; KLUDGE AHEAD
   ;; I would love to know if there's a better way to extract the documentation.
   ;; As it is, I'm treating the HTML output as ground truth.
@@ -45,7 +45,7 @@
   (unless cursor-at-anchor
     (error 'extract-docstring "Unable to locate documentation"))
   
-  (define sintrapara-div (up-to-SIntrapara cursor-at-anchor))
+  (define sintrapara-div (up-to-sintrapara-or-svinsetflow cursor-at-anchor))
   
   (cons 'div
         (cons (cursor-node sintrapara-div)
@@ -65,13 +65,16 @@
 
 
 
-(define (up-to-SIntrapara c)
+(define (up-to-sintrapara-or-svinsetflow c)
   (match (cursor-node c)
     [(list 'div (list '@ (list 'class "SIntrapara"))
            elts ...)
      c]
+    [(list 'blockquote (list '@ (list 'class "SVInsetFlow"))
+           elts ...)
+     c]
     [else
-     (up-to-SIntrapara (cursor-up c))]))
+     (up-to-sintrapara-or-svinsetflow (cursor-up c))]))
 
 
 ;; Focuses the cursor or the anchor with the given name.
@@ -119,6 +122,8 @@
        (for-each loop body)]
       [(? string?)
        (display sexp op)]
+      [(? char?)
+       (display sexp op)]
       [(? symbol?)
        (display (translate-symbol sexp) op)]
       [else
@@ -134,6 +139,7 @@
     [(rsquo) "'"]
     [(ldquo) "``"]
     [(rdquo) "''"]
+    [(ndash) "-"]
     [else
      (error 'translate-symbol "Don't know how to translate ~s" sexp)]))
 
@@ -156,3 +162,7 @@
 ;; sequence-generate*
 ;; thread-send
 ;; rename-file-or-directory
+;; hash->list
+;; current-subprocess-custodian-mode
+;; new-apply-proc
+;; file
