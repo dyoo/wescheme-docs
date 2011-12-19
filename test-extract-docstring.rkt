@@ -11,4 +11,10 @@
 
 
 (for ([n names])
-  (display (doc-sexp->string (extract-doc-sexp/id (list 'racket/base n)))))
+
+  (displayln n)
+  (displayln "-----------")
+  (with-handlers ([exn:fail? (lambda (exn)
+                               (displayln "Cannot find documentation")
+                               (read-line))])
+  (display (doc-sexp->string (extract-doc-sexp/id (list 'racket/base n))))))

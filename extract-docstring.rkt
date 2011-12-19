@@ -131,5 +131,28 @@
   (case sexp
     [(nbsp) " "]
     [(rarr) "->"]
+    [(rsquo) "'"]
+    [(ldquo) "``"]
+    [(rdquo) "''"]
     [else
      (error 'translate-symbol "Don't know how to translate ~s" sexp)]))
+
+
+
+;; Current bugs
+;; make-immutable-hash, ...
+;; free-identifier=?
+;; syntax-taint
+;; module-compiled-exports
+;; read-char
+;; port-display-handler
+;; port-write-handler
+;; port-file-identity
+;; string->bytes/utf-8
+;; lambda
+;; case-lambda
+;; local-expand/capture-lifts
+;; local-transformer-expand
+;; sequence-generate*
+;; thread-send
+;; rename-file-or-directory
