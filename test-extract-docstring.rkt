@@ -10,7 +10,7 @@
 (define names (namespace-mapped-symbols (module->namespace 'racket/base)))
 
 
-#;(for ([n names])
+(for ([n names])
 
   (displayln n)
   (displayln "-----------")
@@ -20,24 +20,8 @@
   (display (doc-sexp->string (extract-doc-sexp/id (list 'racket/base n))))))
 
 ;; Current bugs
-;; make-immutable-hash, ...
-;; free-identifier=?
-;; syntax-taint
+;; procedure-closure-contents-eq?
 ;; module-compiled-exports
-;; read-char
 ;; port-display-handler
 ;; port-write-handler
-;; port-file-identity
-;; string->bytes/utf-8
-;; lambda
-;; case-lambda
-;; local-expand/capture-lifts
-;; local-transformer-expand
-;; sequence-generate*
-;; thread-send
-;; rename-file-or-directory
-;; hash->list
-;; current-subprocess-custodian-mode
 ;; new-apply-proc
-;; file
-
