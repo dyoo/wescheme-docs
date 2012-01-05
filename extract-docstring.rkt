@@ -45,25 +45,26 @@
   (unless cursor-at-anchor
     (error 'extract-docstring "Unable to locate documentation"))
   
-  (define-values (at-signature at-docs) 
+  (define-values (content-up-to-anchor at-docs) 
     (up-to-sintrapara-or-svinsetflow anchor cursor-at-anchor))
   
   ;; At this point, we just walk right, starting from the signature,
   ;; past the docs, till we hit another anchored node.
   (cons 'div
-        (cons (cursor-node at-signature)
-              (cond [(cursor-right? at-signature)
-                     (let loop ([c (cursor-right at-signature)])
-                       (cond
-                         [(has-anchor? (cursor-node c))
-                          '()]
-                         [(cursor-right? c)
-                          (cons (cursor-node c)
-                                (loop (cursor-right c)))]
-                         [else
-                          (list (cursor-node c))]))]
-                    [else
-                     '()]))))
+        (append content-up-to-anchor
+   
+                (cond [(cursor-right? at-docs)
+                       (let loop ([c (cursor-right at-docs)])
+                         (cond
+                           [(has-anchor? (cursor-node c))
+                            '()]
+                           [(cursor-right? c)
+                            (cons (cursor-node c)
+                                  (loop (cursor-right c)))]
+                           [else
+                            (list (cursor-node c))]))]
+                      [else
+                       '()]))))
 
 ;; finds the points where the signature and the documentation begin.
 (define (up-to-sintrapara-or-svinsetflow anchor c)
@@ -75,16 +76,20 @@
                                      [(list 'blockquote (list '@ (list 'class "SVInsetFlow"))
                                             elts ...)
                                       c]
+                                     [(list 'p elts ...)
+                                      c]
                                      [else
                                       (loop (cursor-succ c))])))
   ;; We want to capture the material at the anchor as well.
-  (define at-anchor
-    (let loop ([c at-documentation-start])
-      (cond [(has-anchor? (cursor-node c) anchor)
-             c]
-            [else
-             (loop (cursor-left c))])))
-  (values at-anchor at-documentation-start))
+  (define content-up-to-anchor
+    (reverse
+     (let loop ([c at-documentation-start])
+       (cond [(has-anchor? (cursor-node c) anchor)
+              (list (cursor-node c))]
+             [else
+              (cons (cursor-node c)
+                    (loop (cursor-left c)))]))))
+  (values content-up-to-anchor at-documentation-start))
 
 
 ;; Focuses the cursor or the anchor with the given name.
