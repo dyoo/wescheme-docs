@@ -42,6 +42,11 @@
        (not (empty? (length ((cursor-open-f a-cursor) (cursor-node a-cursor)))))))
           
 
+
+(define RAISE-ERROR (cons 'sentinel 'sentinel))
+
+
+
 (define (cursor-down a-cursor)
   (unless (not ((cursor-atomic?-f a-cursor) (cursor-node a-cursor)))
     (error 'cursor-down "down of atomic element"))
