@@ -11,21 +11,22 @@
          doc-sexp->string)
 
 
-(define xref (load-collections-xref))
+(define XREF (load-collections-xref))
 
 
-(define (extract-doc-sexp/id id [phase #f])
+(define (extract-doc-sexp/id id #:phase (phase #f)
+                                #:xref (xref XREF))
   (define a-tag (xref-binding->definition-tag xref id phase))  
   (unless a-tag
     (error 'extract-docstring "Unable to locate documentation"))
 
-  (extract-doc-sexp/tag a-tag))
+  (extract-doc-sexp/tag a-tag #:xref xref))
 
 
-(define (extract-doc-sexp/tag a-tag)  
+(define (extract-doc-sexp/tag a-tag #:xref (xref XREF))  
   (define-values (path anchor)
     (xref-tag->path+anchor xref a-tag))
-  
+
   (unless (and path anchor)
     (error 'extract-docstring "Unable to find specific-enough documentation"))
     
@@ -161,27 +162,3 @@
     [(ndash) "-"]
     [else
      (error 'translate-symbol "Don't know how to translate ~s" sexp)]))
-
-
-
-;; Current bugs
-;; make-immutable-hash, ...
-;; free-identifier=?
-;; syntax-taint
-;; module-compiled-exports
-;; read-char
-;; port-display-handler
-;; port-write-handler
-;; port-file-identity
-;; string->bytes/utf-8
-;; lambda
-;; case-lambda
-;; local-expand/capture-lifts
-;; local-transformer-expand
-;; sequence-generate*
-;; thread-send
-;; rename-file-or-directory
-;; hash->list
-;; current-subprocess-custodian-mode
-;; new-apply-proc
-;; file
