@@ -22,7 +22,7 @@
 (define (sxml->element an-sxml)
   (match an-sxml
     [(list '& 'nbsp)
-     " "]
+     'nbsp]
     [(list '& sym)
      sym]
 

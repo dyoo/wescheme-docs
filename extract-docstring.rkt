@@ -73,12 +73,12 @@
                                    (match (cursor-node c)
                                      [(list 'div (list '@ (list 'class "SIntrapara"))
                                             elts ...)
-                                      c]
+                                      (cursor-up c)]
                                      [(list 'blockquote (list '@ (list 'class "SVInsetFlow"))
                                             elts ...)
-                                      c]
+                                      (cursor-up c)]
                                      [(list 'p elts ...)
-                                      c]
+                                      (cursor-up c)]
                                      [else
                                       (loop (cursor-succ c))])))
   ;; We want to capture the material at the anchor as well.
