@@ -48,7 +48,7 @@
   
   (define-values (content-up-to-anchor at-docs) 
     (up-to-sintrapara-or-svinsetflow anchor cursor-at-anchor))
-  
+
   ;; At this point, we just walk right, starting from the signature,
   ;; past the docs, till we hit another anchored node.
   (cons 'div
