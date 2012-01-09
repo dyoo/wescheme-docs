@@ -18,7 +18,7 @@
                                 #:xref (xref XREF))
   (define a-tag (xref-binding->definition-tag xref id phase))  
   (unless a-tag
-    (error 'extract-docstring "Unable to locate documentation"))
+    (error 'extract-docstring "Unable to locate documentation for ~s" id))
 
   (extract-doc-sexp/tag a-tag #:xref xref))
 
@@ -44,7 +44,7 @@
   (define cursor-at-anchor
     (navigate-to-anchor my-cursor anchor))
   (unless cursor-at-anchor
-    (error 'extract-docstring "Unable to locate documentation"))
+    (error 'extract-docstring "Unable to locate documentation for ~s" a-tag))
   
   (define-values (content-up-to-anchor at-docs) 
     (up-to-sintrapara-or-svinsetflow anchor cursor-at-anchor))

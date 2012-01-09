@@ -40,9 +40,6 @@
 
 
 (define (tagged->element tag-name attr-names attr-values children)
-  (write tag-name)
-  (write attr-names)
-  
   (cond [(and (eq? tag-name 'a) 
               (equal? attr-names '(href class pltdoc)))
          (define tag-attr (alt-tag (symbol->string tag-name)))
