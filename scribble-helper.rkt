@@ -6,8 +6,16 @@
          racket/match
          (for-syntax "extract-docstring.rkt"))
 
-(provide racket-inject-doc)
+(provide racket-inject-docs
+         racket-inject-doc)
 
+
+(define-syntax (racket-inject-docs stx)
+  (syntax-case stx ()
+    [(_ binding ...)
+     (syntax/loc stx
+       (begin
+         (racket-inject-doc binding) ...))]))
 
 (define-syntax (racket-inject-doc stx)
   (syntax-case stx ()

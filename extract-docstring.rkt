@@ -2,6 +2,7 @@
 (require setup/xref
          scribble/xref
          racket/match
+         racket/path
          (planet neil/html-parsing:1:2)
          "tree-cursor.rkt")
 
@@ -51,7 +52,8 @@
 
   ;; At this point, we just walk right, starting from the signature,
   ;; past the docs, till we hit another anchored node.
-  (cons 'div
+  (normalize-image-srcs
+   (cons 'div
         (append content-up-to-anchor
    
                 (cond [(cursor-right? at-docs)
@@ -65,7 +67,8 @@
                            [else
                             (list (cursor-node c))]))]
                       [else
-                       '()]))))
+                       '()])))
+   (path-only path)))
 
 ;; finds the points where the signature and the documentation begin.
 (define (up-to-sintrapara-or-svinsetflow anchor c)
@@ -121,6 +124,41 @@
               (loop (cursor-succ cursor))]
              [else
               #f])])))
+
+
+
+(define (normalize-image-srcs sexp base-path)
+  (let loop ([sexp sexp])
+    (match sexp
+      [(list 'img (list '@ attrs ...) rest ...)
+       (cons 'img (cons (cons '@ (map (lambda (attr)
+                                        (match attr
+                                          [(list 'src src)
+                                           (cond [(regexp-match? #px"(http:|https:)" src)
+                                                  attr]
+                                                 [else
+                                                  (list 'src
+                                                        (string-append
+                                                         "file://"
+                                                         (path->string
+                                                          (simple-form-path
+                                                           (build-path base-path src)))))])]
+                                          [else
+                                           attr]))
+                                      attrs))
+                        (map loop rest)))]
+      [(list tag rest ...)
+       (cons tag (map loop rest))]
+      [(? string?)
+       sexp]
+      [(? char?)
+       sexp]
+      [(? symbol?)
+       sexp]
+      [else
+       (error 'normalize-image-srcs "Unexpected value: ~s" sexp)])))
+
+
 
 
 (define (doc-sexp->string sexp)
