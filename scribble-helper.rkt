@@ -47,7 +47,7 @@
      an-sxml]
 
     [(? char?)
-     an-sxml]))
+     (string an-sxml)]))
 
 
 (define (tagged->element tag-name attr-names attr-values children)
