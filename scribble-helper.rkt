@@ -44,6 +44,9 @@
      an-sxml]
     
     [(? string?)
+     an-sxml]
+
+    [(? char?)
      an-sxml]))
 
 
