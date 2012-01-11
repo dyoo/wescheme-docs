@@ -24,6 +24,8 @@
          cursor-succ
          cursor-pred?
          cursor-pred
+         cursor-after
+         cursor-after?         
          sexp->cursor)
 
 
@@ -151,6 +153,34 @@
             (cursor-right n)]
            [else
             (loop n)])))]))
+
+
+
+
+(define (cursor-after? a-cursor)
+  (let loop ([n a-cursor])
+    (cond 
+     [(not (eq? (cursor-parent n) #f))
+      (let ([n (cursor-up n)])
+        (cond
+         [(cursor-right? n)
+          #t]
+         [else
+          (loop n)]))]
+     [else
+      #f])))
+
+(define (cursor-after a-cursor)
+  (let loop ([n a-cursor])
+    (unless (cursor-parent a-cursor)
+      (error 'cursor-after "no after"))
+    (let ([n (cursor-up n)])
+      (cond
+       [(cursor-right? n)
+        (cursor-right n)]
+       [else
+        (loop n)]))))
+
 
 
 

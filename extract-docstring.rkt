@@ -56,19 +56,26 @@
    (cons 'div
         (append content-up-to-anchor
    
-                (cond [(cursor-right? at-docs)
-                       (let loop ([c (cursor-right at-docs)])
+                (cond [(or (cursor-right? at-docs) (cursor-after? at-docs))
+                       (let loop ([c (if (cursor-right? at-docs)
+                                         (cursor-right at-docs)
+                                         (cursor-after at-docs))])
                          (cond
                            [(has-anchor? (cursor-node c))
                             '()]
                            [(cursor-right? c)
                             (cons (cursor-node c)
                                   (loop (cursor-right c)))]
+                           [(cursor-after? c)
+                            (loop (cursor-after c))]
                            [else
                             (list (cursor-node c))]))]
                       [else
                        '()])))
    (path-only path)))
+
+;;(define (cursor-after? c)
+;;  (and (cursor-down?
 
 ;; finds the points where the signature and the documentation begin.
 (define (up-to-sintrapara-or-svinsetflow anchor c)
@@ -76,12 +83,12 @@
                                    (match (cursor-node c)
                                      [(list 'div (list '@ (list 'class "SIntrapara"))
                                             elts ...)
-                                      (cursor-up c)]
+                                      c]
                                      [(list 'blockquote (list '@ (list 'class "SVInsetFlow"))
                                             elts ...)
-                                      (cursor-up c)]
+                                      c]
                                      [(list 'p elts ...)
-                                      (cursor-up c)]
+                                      c]
                                      [else
                                       (loop (cursor-succ c))])))
   ;; We want to capture the material at the anchor as well.
