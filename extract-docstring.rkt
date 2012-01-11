@@ -14,6 +14,8 @@
 
 (define XREF (load-collections-xref))
 
+(define cache (make-weak-hash))
+
 
 (define (extract-doc-sexp/id id #:phase (phase #f)
                                 #:xref (xref XREF))
@@ -40,7 +42,8 @@
   ;; It's atrocious, but I don't think I have a good
   ;; alternative at this time.
   
-  (define sxml (call-with-input-file path html->xexp))
+  (define sxml (hash-ref! cache path (lambda ()
+                                       (call-with-input-file path html->xexp))))
   (define my-cursor (sexp->cursor sxml))
   (define cursor-at-anchor
     (navigate-to-anchor my-cursor anchor))
