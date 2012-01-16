@@ -3,6 +3,7 @@
          scribble/xref
          racket/match
          racket/path
+         racket/runtime-path
          (planet neil/html-parsing:1:2)
          "tree-cursor.rkt")
 
@@ -10,6 +11,35 @@
 (provide extract-doc-sexp/id
          extract-doc-sexp/tag
          doc-sexp->string)
+
+(define-runtime-path lifted-images "lifted-images")
+
+(unless (directory-exists? lifted-images)
+  (make-directory lifted-images))
+
+
+
+;; lift-image: path -> path
+;; Relocates the image relative to the lifted-images directory of this program.
+(define lift-image-counter 0)
+(define (lift-image path)
+  (define-values (base name dir?) (split-path path))
+  (set! lift-image-counter (add1 lift-image-counter))
+  (define lifted-path (build-path lifted-images
+                                  (string-append
+                                   (number->string lift-image-counter)
+                                   "_"
+                                   (path->string name))))
+  (copy-file path lifted-path #t)
+
+  (build-path "lifted-images"
+              (string-append
+               (number->string lift-image-counter)
+               "_"
+               (path->string name))))
+
+  
+
 
 
 (define XREF (load-collections-xref))
@@ -148,9 +178,8 @@
                                                   attr]
                                                  [else
                                                   (list 'src
-                                                        (string-append
-                                                         "file://"
-                                                         (path->string
+                                                        (path->string
+                                                         (lift-image
                                                           (simple-form-path
                                                            (build-path base-path src)))))])]
                                           [else

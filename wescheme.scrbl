@@ -2,6 +2,7 @@
 
 @(require "scribble-helper.rkt")
 @(require (for-label 2htdp/image
+                     "mock-bindings.rkt"
                      (only-in htdp/image
                               image=?
                               color-list->image)
@@ -189,9 +190,106 @@ of things you can do in WeScheme.  You can:
 
 
 @section{World programming and Images API}
+@declare-exporting["mock-bindings.rkt"]
 
-Here's a listing of the functions you can use to make images and World
-programs.
+
+@defproc[(big-bang [w world]
+                   [h big-bang-handler] ...) world]{
+Start a big bang computation.  The @racket[big-bang] consumes an initial world,
+as well as several handlers to configure it, described next:
+}
+
+@defproc[(stop-when [stop? ([w world] ->  boolean)]) big-bang-handler]{
+Tells @racket[big-bang] when to stop.
+@codeblock|{
+...
+(define-struct world (given expected))
+...
+
+;; stop?: world -> boolean
+(define (stop? world)
+  (string=? (world-given world) (world-expected world)))
+
+(big-bang ...
+          (stop-when stop?))
+}|
+}
+
+
+
+@defproc*[(((on-tick [tick-f ([w world] -> world)] [delay real]) big-bang-handler)
+           ((on-tick [tick-f ([w world] -> world)]) big-bang-handler))]{
+Tells @racket[big-bang] to update the world during clock ticks.
+
+By default, this will send a clock tick 28 times a second, but if
+given @racket[delay], it will use that instead.
+@codeblock|{
+...
+;; tick: world -> world
+(define (tick world)
+  (add1 world))
+
+(big-bang ...
+          (on-tick tick 5)) ;; tick every five seconds
+}|
+}
+
+
+
+
+@defproc[(on-key [key-f ([w world] [k key] -> world)]) big-bang-handler]{
+Tells @racket[big-bang] to update the world when a key is pressed.  The @racket[key-f]
+function will be called with the particular key being pressed.
+
+@codeblock|{
+...
+;; The world is a number.
+
+;; handle-key: world key -> image
+(define (handle-key w k)
+  (cond [(key=? k "up")
+         (add1 w)]
+        [(key=? k "down")
+         (sub1 w)]
+        [else 
+         w]))
+...
+(big-bang ...
+          (on-key handle-key))
+}|
+}
+
+@defproc[(key=? [a-key key] [a-string string]) boolean]{
+Returns true if @racket[a-key] is equal to @racket[a-string].
+}
+
+
+
+
+@defproc[(to-draw [draw-f ([w world] -> image)]) big-bang-handler]{
+Tells @racket[big-bang] how to update what the world looks like.  The draw
+function will be called every time an event occurs.
+
+@codeblock|{
+...
+;; The world is a number.
+
+;; draw: world -> image
+(define (draw world)
+  (circle world "solid" "blue"))
+...
+(big-bang ...
+          (to-draw draw))
+}|
+}
+
+
+
+
+
+
+
+Here is a listing of the functions you can use to make images.
 
 @racket-inject-docs[make-color
                     empty-scene
