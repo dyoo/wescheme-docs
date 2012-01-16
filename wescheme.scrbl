@@ -161,15 +161,37 @@
 @title{WeScheme documentation}
 
 
-@section{Introduction}
+
+@section{Example programs}
+
+Here are a few example programs that can give you an idea of the kinds
+of things you can do in WeScheme.  You can:
+
+@itemlist[
+
+@item{@link["http://www.wescheme.org/view?publicId=strum-plaid-tasty-label-gruff"]{... make shapes and pictures ...}}
+
+@item{@link["http://www.wescheme.org/view?publicId=cable-wagon-entry-cadre-vibes"]{... or image macros,}}
+
+@item{@link["http://www.wescheme.org/view?publicId=balls-snack-lobby-drawl-irate"]{... animate a ballooning circle,}}
+
+@item{@link["http://www.wescheme.org/view?publicId=horde-koala-camel-knife-lurid"]{... or land a UFO,}}
+
+@item{@link["http://www.wescheme.org/view?publicId=messy-humor-truck-adopt-outdo"]{... or have it chase after cows!}}
+]
 
 
-@section{Basic Usage}
+@section{The environment}
+[ fill me in... ]
+
 
 
 
 
 @section{World programming and Images API}
+
+Here's a listing of the functions you can use to make images and World
+programs.
 
 @racket-inject-docs[make-color
                     empty-scene
@@ -380,3 +402,4 @@
 
 @section{Acknowledgements}
 
+[... fill me in]
