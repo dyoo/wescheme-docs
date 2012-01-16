@@ -7,7 +7,16 @@
          (for-syntax "extract-docstring.rkt"))
 
 (provide racket-inject-docs
-         racket-inject-doc)
+         racket-inject-doc
+         inject-css)
+
+
+(define (inject-css path)
+  (cond-element 
+   [latex ""]
+   [html (make-element (make-style #f (list (make-css-addition path)))
+                       '())]
+   [text ""]))
 
 
 (define-syntax (racket-inject-docs stx)

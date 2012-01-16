@@ -152,6 +152,12 @@
                               true
                               zero?)))
 
+
+
+@inject-css{extra.css}
+
+
+
 @title{WeScheme documentation}
 
 
