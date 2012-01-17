@@ -159,13 +159,27 @@
 
 
 
-@title{WeScheme documentation}
+@title{WeScheme}
 
+@hyperlink["http://www.wescheme.org"]{WeScheme} is an web-based
+programming environment that allows us to write, run, and share
+programs on the web.  WeScheme tries to takes the web seriously:
+programs written in WeScheme should be available from any computer
+with a capable Javascript-enabled web browser.  The editing
+environment, the compiler, and the associated runtime libraries are
+all hosted on WeScheme, eliminating installation hassles.  WeScheme
+allows us to easily share programs by creating share URLs; these share
+URLs can be used to run a program or, if the author permits it, allow
+anyone to view the source to that program.
+
+Web programs are typically interactive, so WeScheme provides special
+support for World programs that can interact with timer ticks,
+keyboard events, and images.
 
 
 @section{Example programs}
 
-Here are a few example programs that can give you an idea of the kinds
+Here are a few example programs that can give an idea of the kinds
 of things you can do in WeScheme.  You can:
 
 @itemlist[
@@ -183,13 +197,57 @@ of things you can do in WeScheme.  You can:
 
 
 @section{The environment}
-[ fill me in... ]
+
+Let's jump in and explore WeScheme by running a few programs.
+
+Open up a web browser to @url{http://www.wescheme.org}.  Press the
+@emph{Start Coding} button.  The following editor page should be
+divided into a top @emph{definitions} section, and a bottom
+@emph{interactions} section.  Click onto the top half of the window
+and enter in the following text on line 2, quotes and all:
+
+@racketblock[
+"hello world"
+]
+
+Press the @emph{Run} button at the toolbar at the top.  If all goes
+well, we should see a @racket["hello world"] appear on the bottom
+window.
+
+
+Next, change the line so it says:
+
+@racketblock[
+(bitmap/url "http://racket-lang.org/logo.png")
+]
+
+Press the @emph{Run} button again.  We should now see an image in the
+@emph{Interactions} window.
+
+Web images are values, as are strings, numbers, booleans, and
+structures.  You can even apply algebra on them.  Try:
+@itemlist[
+
+@item{
+@racketblock[
+(rotate 45 (bitmap/url "http://racket-lang.org/logo.png"))
+]
+}
+
+@item{
+@racketblock[
+(overlay (bitmap/url "http://racket-lang.org/logo.png")
+         (bitmap/url "http://www.wescheme.org/css/images/BigLogo.png"))
+]
+}
+]
+Many more image functions are built-into WeScheme; you can explore the
+functions in @secref["sec:world-image-api"].
 
 
 
 
-
-@section{World programming and Images API}
+@section[#:tag "sec:world-image-api"]{World programming and Images API}
 @declare-exporting["mock-bindings.rkt"]
 
 
@@ -500,4 +558,40 @@ Here is a listing of the functions you can use to make images.
 
 @section{Acknowledgements}
 
-[... fill me in]
+
+WeScheme uses code and utilities from the following external projects:
+@itemlist[
+@item{jshashtable (@url{http://www.timdown.co.uk/jshashtable/})}
+@item{js-numbers (@url{http://github.com/dyoo/js-numbers/})}
+@item{JSON (@url{http://www.json.org/js.html})}
+@item{jquery (@url{http://jquery.com/})}
+@item{Google Closure Compiler (@url{http://code.google.com/p/closure-compiler/})}
+@item{excanvas (@url{http://excanvas.sourceforge.net/})}
+@item{canvas-text (@url{http://code.google.com/p/canvas-text/source/browse/trunk})} 
+]
+
+The following folks have helped tremendously in the implementation of
+WeScheme by implementing libraries, giving guidence, reporting bugs,
+and suggesting improvements.
+
+@;;;;
+@; in alphabetical order
+@;;;;
+@(apply itemlist
+   (map item (sort (list
+   "Ethan Cecchetti"   ;; runtime library work
+   "Scott Newman"      ;; runtime library work 
+   "Will Zimrin"       ;; CodeMirror 2 stuff
+   "Brendan Hickley"   ;; AppEngine, security stuff
+   "Zhe Zhang"         ;; runtime library
+   "Guillaume Marceau"      ;; general help, upcoming error messages
+   "Shriram Krishnamurthi"  ;; of course... :)
+   "Kathi Fisler"           ;; ditto!
+   "Emmanuel Schanzer"      ;; same!
+   "Robby Findler"
+   "Matthew Flatt"
+) string<?))
+)
+
+
+Please send any bug reports to Danny Yoo (@tt["dyoo@hashcollision.org"]).
