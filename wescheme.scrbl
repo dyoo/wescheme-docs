@@ -215,7 +215,7 @@ goes well, we should see a @racket["hello world"] appear on the bottom
 window.
 
 
-Next, add another line in the interactions window:
+Next, add another line in the @emph{definitions} window:
 
 @racketblock[
 (bitmap/url "http://racket-lang.org/logo.png")
