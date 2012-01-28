@@ -12,7 +12,7 @@
 ;; helper functions for embedding internal instances of WeScheme.
 (define (embed-wescheme #:id (id #f)
                         #:pid (pid #f)
-                        #:width (width "80%")
+                        #:width (width "90%")
                         #:height (height 500)
 
                         #:interactions-text (interactions-text #f)
