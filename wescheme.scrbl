@@ -10,6 +10,7 @@
                               pair?)
 
                      (only-in lang/htdp-advanced
+                              check-expect
                               * + - / < <= = =~
                               > >= abs acos add1
                               andmap angle append
@@ -163,14 +164,13 @@
 
 @hyperlink["http://www.wescheme.org"]{WeScheme} is an web-based
 programming environment that allows us to write, run, and share
-programs on the web.  WeScheme tries to takes the web seriously:
-programs written in WeScheme should be available from any computer
-with a capable Javascript-enabled web browser.  The editing
-environment, the compiler, and the associated runtime libraries are
-all hosted on WeScheme, eliminating installation hassles.  WeScheme
-allows us to easily share programs by creating share URLs; these share
-URLs can be used to run a program or, if the author permits it, allow
-anyone to view the source to that program.
+programs on the web.  Programs written in WeScheme should be available
+from any computer with a capable Javascript-enabled web browser.  The
+editing environment, the compiler, and the associated runtime
+libraries are all hosted on WeScheme, eliminating installation
+hassles.  WeScheme allows us to easily share programs by creating
+share URLs; these share URLs can be used to run a program or, if the
+author permits it, allow anyone to view the source to that program.
 
 Web programs are typically interactive, so WeScheme provides special
 support for World programs that can interact with timer ticks,
@@ -203,46 +203,39 @@ Let's jump in and explore WeScheme by running a few programs.
 Open up a web browser to @url{http://www.wescheme.org}.  Press the
 @emph{Start Coding} button.  The following editor page should be
 divided into a top @emph{definitions} section, and a bottom
-@emph{interactions} section.  Click onto the top half of the window
-and enter in the following text on line 2, quotes and all:
+@emph{interactions} section.  Click onto the @emph{definitions} top
+half of the window and enter in the following text, quotes and all:
 
 @racketblock[
 "hello world"
 ]
 
-Press the @emph{Run} button at the toolbar at the top.  If all goes
-well, we should see a @racket["hello world"] appear on the bottom
+Next, press the @emph{Run} button at the toolbar at the top.  If all
+goes well, we should see a @racket["hello world"] appear on the bottom
 window.
 
 
-Next, change the line so it says:
+Next, add another line in the @emph{definitions} window:
 
 @racketblock[
 (bitmap/url "http://racket-lang.org/logo.png")
 ]
 
 Press the @emph{Run} button again.  We should now see an image in the
-@emph{Interactions} window.
+@emph{Interactions} window as well.
 
 Web images are values, as are strings, numbers, booleans, and
 structures.  You can even apply algebra on them.  Try:
-@itemlist[
-
-@item{
 @racketblock[
 (rotate 45 (bitmap/url "http://racket-lang.org/logo.png"))
 ]
-}
-
-@item{
+or
 @racketblock[
 (overlay (bitmap/url "http://racket-lang.org/logo.png")
          (bitmap/url "http://www.wescheme.org/css/images/BigLogo.png"))
 ]
-}
-]
-Many more image functions are built-into WeScheme; you can explore the
-functions in @secref["sec:world-image-api"].
+for example.  Many more image functions are built-into WeScheme; you
+can explore the functions in @secref["sec:world-image-api"].
 
 
 
@@ -254,23 +247,7 @@ functions in @secref["sec:world-image-api"].
 @defproc[(big-bang [w world]
                    [h big-bang-handler] ...) world]{
 Start a big bang computation.  The @racket[big-bang] consumes an initial world,
-as well as several handlers to configure it, described next:
-}
-
-@defproc[(stop-when [stop? ([w world] ->  boolean)]) big-bang-handler]{
-Tells @racket[big-bang] when to stop.
-@codeblock|{
-...
-(define-struct world (given expected))
-...
-
-;; stop?: world -> boolean
-(define (stop? world)
-  (string=? (world-given world) (world-expected world)))
-
-(big-bang ...
-          (stop-when stop?))
-}|
+as well as several handlers to configure it, described in this section:
 }
 
 
@@ -282,16 +259,15 @@ Tells @racket[big-bang] to update the world during clock ticks.
 By default, this will send a clock tick 28 times a second, but if
 given @racket[delay], it will use that instead.
 @codeblock|{
-...
+;; The world is a number
 ;; tick: world -> world
 (define (tick world)
   (add1 world))
 
-(big-bang ...
-          (on-tick tick 5)) ;; tick every five seconds
+(big-bang 0
+          (on-tick tick 2)) ;; tick every two seconds
 }|
 }
-
 
 
 
@@ -300,7 +276,6 @@ Tells @racket[big-bang] to update the world when a key is pressed.  The @racket[
 function will be called with the particular key being pressed.
 
 @codeblock|{
-...
 ;; The world is a number.
 
 ;; handle-key: world key -> image
@@ -311,8 +286,7 @@ function will be called with the particular key being pressed.
          (sub1 w)]
         [else 
          w]))
-...
-(big-bang ...
+(big-bang 0
           (on-key handle-key))
 }|
 }
@@ -323,25 +297,42 @@ Returns true if @racket[a-key] is equal to @racket[a-string].
 
 
 
-
 @defproc[(to-draw [draw-f ([w world] -> image)]) big-bang-handler]{
 Tells @racket[big-bang] how to update what the world looks like.  The draw
 function will be called every time an event occurs.
 
 @codeblock|{
-...
 ;; The world is a number.
 
 ;; draw: world -> image
 (define (draw world)
   (circle world "solid" "blue"))
-...
-(big-bang ...
+
+(big-bang 20
           (to-draw draw))
 }|
+
+To support some legacy WeScheme applications, the name
+@racket[on-redraw] is an alias for @racket[to-draw].
 }
 
 
+
+
+@defproc[(stop-when [stop? ([w world] ->  boolean)]) big-bang-handler]{
+Tells @racket[big-bang] when to stop.
+@codeblock|{
+;; the world is a number
+
+;; stop?: world -> boolean
+(define (stop? world)
+  (> world 10))
+
+(big-bang 0
+          (stop-when stop?)
+          (on-tick add1 1))
+}|
+}
 
 
 
@@ -410,7 +401,17 @@ Here is a listing of the functions you can use to make images.
 
 
 @section{Basic operations}
-@racket-inject-docs[*
+@racket-inject-docs[check-expect]
+As a convenience, the name @racket[EXAMPLE] is an alias for
+@racket[check-expect].
+@racketblock[
+(check-expect (+ 1 2) 3)
+]
+
+
+
+@racket-inject-docs[
+*
 + - / < <= = =~
                               > >= abs acos add1
                               andmap angle append
