@@ -4,6 +4,8 @@
 @(require "embed-wescheme.rkt")
 
 @inject-css{fullpage.css}
+@inject-javascript{easyXDM.min.js}
+@inject-javascript{json2.min.js}
 
 @title{WeScheme Embedding Documentation}
 

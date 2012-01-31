@@ -8,7 +8,18 @@
 
 (provide racket-inject-docs
          racket-inject-doc
-         inject-css)
+         inject-css
+         inject-javascript)
+
+
+;; Adds JavaScript if we're rendering in HTML.
+(define (inject-javascript path)
+  (cond-element 
+   [latex ""]
+   [html (make-element (make-style #f (list (make-script-property "text/javascript"
+                                                           path)))
+                       '())]
+   [text ""]))
 
 
 (define (inject-css path)
