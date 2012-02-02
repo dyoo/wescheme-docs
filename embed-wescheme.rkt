@@ -45,16 +45,21 @@
          ,@(maybe-add-option hide-footer? 'hideFooter)
          ,@(maybe-add-option hide-definitions? 'hideDefinitions)
          ,@(maybe-add-option auto-run? 'autorun)))))
-  (sxml->element
-   `(iframe
-     (@ (src
-         ,(string-append "http://www.wescheme.org/openEditor?"
-                         encoded-alist))
-        ,@(if id
-              `((id ,(symbol->string id)))
-              '())
-        (width ,(dimension->string width))
-        (height ,(dimension->string height))))))
+  (splice
+   (list (sxml->element
+          `(iframe
+            (@ (src
+                ,(string-append "http://www.wescheme.org/openEditor?"
+                                encoded-alist))
+               ,@(if id
+                     `((id ,(symbol->string id)))
+                     '())
+               (width ,(dimension->string width))
+               (height ,(dimension->string height)))))
+
+         ;; TODO: add the JavaScript code to add the appropriate JavaScript binding
+
+         )))
 
 
 ;; dimension->string: (U number string) -> string
