@@ -1,13 +1,10 @@
 #lang scribble/manual
 
 @(require "scribble-helper.rkt")
-@(require "embed-wescheme.rkt")
+@(require "wescheme.rkt")
 
 @inject-css{fullpage.css}
-@inject-javascript-file{http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js}
-@inject-javascript-file{easyXDM.debug.js}
-@inject-javascript-file{json2.min.js}
-@inject-javascript-file{wescheme-embedded.js}
+@inject-embedding-libraries[]
 
 @title{WeScheme Embedding Documentation}
 

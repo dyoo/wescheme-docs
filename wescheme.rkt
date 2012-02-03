@@ -5,14 +5,49 @@
          scribble/decode
          scribble/html-properties
          scribble/core
-         "scribble-helper.rkt")
+         (only-in scribble/manual racket)
+         "scribble-helper.rkt"
+         (for-syntax racket/base
+                     syntax/to-string))
 
-(provide embed-wescheme)
+(provide embed-wescheme
+         inject-embedding-libraries
+         example)
+
+
+
+
+(define-syntax (example stx)
+  (syntax-case stx ()
+    [(_ thing options ...)
+     (with-syntax ([text (syntax->string #'(thing))])
+       (syntax/loc stx
+         (splice (list 
+                  (racket thing)
+                  (embed-wescheme #:interactions-text text
+                                  #:auto-run? #t
+                                  #:hide-header? #t
+                                  #:hide-footer? #t
+                                  #:hide-definitions? #t
+                                  #:with-rpc? #t
+                                  #:width 500
+                                  #:height 50)))))]))
+
+
+
+(define (inject-embedding-libraries)
+  (splice (list
+           (inject-javascript-file "http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js")
+           (inject-javascript-file "easyXDM.min.js")
+           (inject-javascript-file "json2.min.js")
+           (inject-javascript-file "wescheme-embedded.js"))))
+          
 
 
 
 ;; helper functions for embedding internal instances of WeScheme.
-(define (embed-wescheme #:dom-id (id (gensym 'wescheme))
+(define (embed-wescheme #:id (id (gensym 'wescheme))
+
                         #:public-id (pid #f)
                         #:width (width "90%")
                         #:height (height 500)
@@ -57,7 +92,8 @@
   (splice
    (list (sxml->element
           `(div
-            (@ (id ,(symbol->string id)))
+            (@ (id ,(symbol->string id))
+               (class "embedded-wescheme"))
             ""))
          (inject-javascript
           (format "document.getElementById(~s).style.width=~s; document.getElementById(~s).style.height=~s;"

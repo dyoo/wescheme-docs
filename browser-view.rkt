@@ -15,6 +15,7 @@
                  (error 'req "shouldn't ever be here"))
                #:servlet-path (string-append "/" (path->string name))
                #:servlet-regexp #px"$^"
+               #:port (+ (add1 (random 8000)) 1024)
                #:command-line? #t
                #:launch-browser? #t
                #:extra-files-paths (list
