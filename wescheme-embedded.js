@@ -12,6 +12,20 @@ var WeSchemeEmbedded = (function() {
                                          getDefinitionsText : {}}});
     };
 
+    WithRpc.prototype.run = function(onSuccess, onFail) {
+        this.rpc.run(onSuccess, onFail);
+    };
+
+    WithRpc.prototype.requestBreak = function(onSuccess, onFail) {
+        this.rpc.requestBreak(onSuccess, onFail);
+    };
+
+    WithRpc.prototype.setDefinitionsText = function(v, onSuccess, onFail) {
+        this.rpc.setDefinitionsText(v, onSuccess, onFail);
+    };
+
+
+
     var WithoutRpc = function(url, containerName) {
         var container = document.getElementById(containerName);
         var iframe = document.createElement("iframe");

@@ -19,14 +19,17 @@ few examples:
 
 @itemize[
 
-@item{@embed-wescheme[#:public-id "champ-neigh-stoop-sinew-overt"
+@item{@embed-wescheme[#:id 'example1
+                      #:public-id "champ-neigh-stoop-sinew-overt"
                       #:width "70%"]}
 
-@item{@embed-wescheme[#:public-id "kiosk-brook-cover-diner-smoky"
+@item{@embed-wescheme[#:id 'example2
+                      #:public-id "kiosk-brook-cover-diner-smoky"
                       #:width "70%"
                       #:height 700]}
 
-@item{@embed-wescheme[#:interactions-text "(+ 1 2 3)"
+@item{@embed-wescheme[#:id 'example3
+                      #:interactions-text "(+ 1 2 3)"
                       #:hide-header? #t
                       #:hide-footer? #t
                       #:hide-definitions? #t]}
@@ -55,9 +58,8 @@ interactions pane.}
 ]
 
 
+
+
 @section{TODO}
 
-Add more features to the embedded WeScheme instance: have it use
-@tt{postMessage} and do things like @tt{break}, @tt{run}, etc, so it's
-a better citizen of the Web.  We should be able to send and receive
-values from an embedded WeScheme instance easily.
+Make things cooler.
