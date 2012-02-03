@@ -2,18 +2,22 @@
 
 (require net/uri-codec
          racket/match
+         scribble/decode
          scribble/html-properties
-         scribble/core)
+         scribble/core
+         "scribble-helper.rkt")
 
 (provide embed-wescheme)
 
 
 
 ;; helper functions for embedding internal instances of WeScheme.
-(define (embed-wescheme #:id (id #f)
-                        #:pid (pid #f)
+(define (embed-wescheme #:dom-id (id (gensym 'wescheme))
+                        #:public-id (pid #f)
                         #:width (width "90%")
                         #:height (height 500)
+
+                        #:with-rpc? (with-rpc? #f)
 
                         #:interactions-text (interactions-text #f)
                         #:warn-on-exit? (warn-on-exit? #f)
@@ -40,26 +44,33 @@
     (parameterize ([current-alist-separator-mode 'amp])
       (alist->form-urlencoded
        `(,pid-or-interactions-alist-chunk
+         ,@(maybe-add-option with-rpc? 'embedded)
          ,@(maybe-add-option warn-on-exit? 'warnOnExit)
          ,@(maybe-add-option hide-header? 'hideHeader)
          ,@(maybe-add-option hide-footer? 'hideFooter)
          ,@(maybe-add-option hide-definitions? 'hideDefinitions)
          ,@(maybe-add-option auto-run? 'autorun)))))
+
+  (define url
+    (string-append "http://www.wescheme.org/openEditor?" encoded-alist))
+
   (splice
    (list (sxml->element
-          `(iframe
-            (@ (src
-                ,(string-append "http://www.wescheme.org/openEditor?"
-                                encoded-alist))
-               ,@(if id
-                     `((id ,(symbol->string id)))
-                     '())
-               (width ,(dimension->string width))
-               (height ,(dimension->string height)))))
-
-         ;; TODO: add the JavaScript code to add the appropriate JavaScript binding
-
-         )))
+          `(div
+            (@ (id ,(symbol->string id)))
+            ""))
+         (inject-javascript
+          (format "document.getElementById(~s).style.width=~s; document.getElementById(~s).style.height=~s;"
+                  (symbol->string id)
+                  (dimension->string width)
+                  (symbol->string id)
+                  (dimension->string height)))
+         (inject-javascript
+          (format (if with-rpc?
+                      "WeSchemeEmbedded.withRpc(~s, ~s)"
+                      "WeSchemeEmbedded.withoutRpc(~s, ~s);")
+                  url
+                  (symbol->string id))))))
 
 
 ;; dimension->string: (U number string) -> string
@@ -67,7 +78,7 @@
 (define (dimension->string dim)
   (cond
    [(number? dim)
-    (number->string dim)]
+    (string-append (number->string dim) "px")]
    [(string? dim)
     dim]
    [else

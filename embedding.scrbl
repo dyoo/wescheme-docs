@@ -4,8 +4,10 @@
 @(require "embed-wescheme.rkt")
 
 @inject-css{fullpage.css}
-@inject-javascript-file{easyXDM.min.js}
+@inject-javascript-file{http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js}
+@inject-javascript-file{easyXDM.debug.js}
 @inject-javascript-file{json2.min.js}
+@inject-javascript-file{wescheme-embedded.js}
 
 @title{WeScheme Embedding Documentation}
 
@@ -17,9 +19,11 @@ few examples:
 
 @itemize[
 
-@item{@embed-wescheme[#:pid "champ-neigh-stoop-sinew-overt"]}
+@item{@embed-wescheme[#:public-id "champ-neigh-stoop-sinew-overt"
+                      #:width "70%"]}
 
-@item{@embed-wescheme[#:pid "kiosk-brook-cover-diner-smoky"
+@item{@embed-wescheme[#:public-id "kiosk-brook-cover-diner-smoky"
+                      #:width "70%"
                       #:height 700]}
 
 @item{@embed-wescheme[#:interactions-text "(+ 1 2 3)"

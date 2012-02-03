@@ -23,11 +23,10 @@
    [text ""]))
 
 (define (inject-javascript-file path-name)
-  (define body file->string path-name)
   (cond-element 
    [latex ""]
    [html (make-element (make-style #f (list (make-script-property "text/javascript"
-                                                           body)))
+                                                           path-name)))
                        '())]
    [text ""]))
 
