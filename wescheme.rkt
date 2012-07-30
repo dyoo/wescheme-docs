@@ -121,7 +121,7 @@
     (error 'dimension->string "Don't know how to translate ~e to a dimension" dim)]))
 
 ;; sxml->element: sxml -> element
-;; Embeds HTML content into a Scribble document
+;; Embeds HTML content into a Scribble document.
 (define (sxml->element an-sxml)
   (match an-sxml
     [(list '& 'nbsp)
