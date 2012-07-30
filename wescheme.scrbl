@@ -591,6 +591,11 @@ and suggesting improvements.
    "Emmanuel Schanzer"      ;; same!
    "Robby Findler"
    "Matthew Flatt"
+
+   ;; The members of the Mongolian Horde working on the colored error messages:
+   "Michael Rowland"
+   "Daniel Kocoj"
+   "Andrew Tian"
 ) string<?))
 )
 
