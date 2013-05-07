@@ -8,11 +8,12 @@
 ;; This is meant to remove the references to "pens" in the documentation
 ;; as WeScheme does not currently support them.
 (define (replace-pen-references an-sexp)
-  (remove-outline-pen-note
-   (remove-shape-bounding-note
-    (remove-or-c-pen-color-contract 
-     (remove-pen-or-color-references 
-      (sexp-normalize an-sexp))))))
+  (remove-scale-pen-sizes-note
+   (remove-outline-pen-note
+    (remove-shape-bounding-note
+     (remove-or-c-pen-color-contract 
+      (remove-pen-or-color-references 
+       (sexp-normalize an-sexp)))))))
 
 
 (define (remove-pen-or-color-references an-sexp)
@@ -192,6 +193,40 @@
              " or " 
              (list 'span _ "\"solid\"")
              (? (weak-string-match ", then the last argument must be an "))
+             _
+             "."
+             rest ...)
+       (walk rest)]
+      [(list f r ...)
+       (cons f (walk r))]
+      [(list)
+       '()]))
+
+  (deep-walk-child-elts walk an-sexp))
+
+
+
+
+
+(define (remove-scale-pen-sizes-note an-sexp)
+  (define (walk elts)
+    (match elts
+      [(list (? (weak-string-match 
+                 "The pen sizes are also scaled and thus draw thicker (or thinner) lines than the original image, unless the pen was size "))
+             _
+             _
+             _
+             _
+             _
+             (? (weak-string-match
+                 " and thus it always draws a one pixel wide line; this is also the case for "))
+             _
+             (list 'span _ "outline")
+             " and " 
+             (list 'span _ "\"outline\"")
+             (? (weak-string-match " shapes that are drawn with an "))
+             _
+             (? (weak-string-match " instead of a "))
              _
              "."
              rest ...)
