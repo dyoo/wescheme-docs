@@ -30,6 +30,25 @@
      an-sexp]))
 
 
+;; deep-walk-child-elts: ((listof sexp) -> (listof sexp)) sexp -> sexp
+;; Helper to recursively walk through the children elements and
+;; do substitutions.
+(define (deep-walk-child-elts walk an-sexp)
+  (let loop ([an-sexp an-sexp])
+    (match an-sexp
+      [(list tag (list '@ attrs ...) children ...)
+       (list* tag (list* '@ attrs) 
+              (walk (map loop children)))]
+      [(list tag children ...)
+       (list* tag (walk (map loop children)))]
+      [(? string?)
+       an-sexp]
+      [else
+       an-sexp])))
+
+
+;; remove-or-c-pen-color-contract an-sexp: sexp -> sexp
+;; Remove references to the (or/c pen? image-color?)
 (define (remove-or-c-pen-color-contract an-sexp)
   (define (walk elts)
     (match elts
@@ -46,21 +65,7 @@
        (cons f (walk r))]
       [(list)
        '()]))
-
-  (match an-sexp
-    [(list tag (list '@ attrs ...) children ...)
-     (list* tag (list* '@ attrs) 
-            (walk (map remove-or-c-pen-color-contract children)))]
-    [(list tag children ...)
-     (list* tag (walk (map remove-or-c-pen-color-contract children)))]
-    [(? string?)
-     (cond
-      [(string=? an-sexp "pen-or-color")
-       "color"]
-      [else
-       an-sexp])]
-    [else
-     an-sexp]))
+  (deep-walk-child-elts walk an-sexp))
 
 
 ;; weak-string-match: string -> (sexp -> boolean)
@@ -139,17 +144,4 @@
       [(list)
        '()]))
 
-  (match an-sexp
-    [(list tag (list '@ attrs ...) children ...)
-     (list* tag (list* '@ attrs) 
-            (walk (map remove-outline-pen-note children)))]
-    [(list tag children ...)
-     (list* tag (walk (map remove-outline-pen-note children)))]
-    [(? string?)
-     (cond
-      [(string=? an-sexp "pen-or-color")
-       "color"]
-      [else
-       an-sexp])]
-    [else
-     an-sexp]))
+  (deep-walk-child-elts walk an-sexp))
