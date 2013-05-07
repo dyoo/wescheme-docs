@@ -9,9 +9,10 @@
 ;; as WeScheme does not currently support them.
 (define (replace-pen-references an-sexp)
   (remove-outline-pen-note
-   (remove-or-c-pen-color-contract 
-    (remove-pen-or-color-references 
-     (sexp-normalize an-sexp)))))
+   (remove-shape-bounding-note
+    (remove-or-c-pen-color-contract 
+     (remove-pen-or-color-references 
+      (sexp-normalize an-sexp))))))
 
 
 (define (remove-pen-or-color-references an-sexp)
@@ -71,10 +72,16 @@
 ;; weak-string-match: string -> (sexp -> boolean)
 ;; Returns a function that reports when x and y are the same, modulo
 ;; whitespace.
-(define (weak-string-match x)
-  (lambda (y)
-    (string=? (regexp-replace* #px"\\s+" x " ")
-              (regexp-replace* #px"\\s+" (sexp->string y) " "))))
+(define weak-string-match 
+  (let ([ht (make-hash)])
+    (lambda (x)
+      (unless (hash-has-key? ht x)
+        (hash-set! ht x 
+                  (lambda (y)
+                    (string=? (regexp-replace* #px"\\s+" x " ")
+                              (regexp-replace* #px"\\s+" (sexp->string y) " ")))))
+      (hash-ref ht x))))
+
 
 
 (define (sexp->string an-sexp)
@@ -122,7 +129,7 @@
 
 
 
-(define (remove-outline-pen-note an-sexp)
+(define (remove-shape-bounding-note an-sexp)
   (define (walk elts)
     (match elts
       [(list "Note that when the "
@@ -137,6 +144,56 @@
              " (in the "
              _
              (? (weak-string-match ") for a more careful explanation of the ramifications of this fact."))
+             rest ...)
+       (walk rest)]
+      [(list  (? (weak-string-match "Some shapes (notably those with "))
+              _
+              (list 'span _ "outline")
+              " or " 
+              (list 'span _ "\"outline\"")
+              (? (weak-string-match " as the "))
+              _
+              (? (weak-string-match " argument) draw outside of their bounding boxes and thus cropping them may remove part of them (often the lower-left and lower-right edges). See "))
+              (list 'a _ ...)
+              " (in the "
+              _
+              (? (weak-string-match ") for a more careful discussion of this issue."))
+              rest ...)
+       (walk rest)]
+
+      [(list f r ...)
+       (cons f (walk r))]
+      [(list)
+       '()]))
+
+  (deep-walk-child-elts walk an-sexp))
+
+
+
+(define (remove-outline-pen-note an-sexp)
+  (define (walk elts)
+    (match elts
+      [(list "If the "
+             _
+             " argument is "
+             _
+             (list 'span _ "outline")
+             " or " 
+             (list 'span _ "\"outline\"")
+             (? (weak-string-match ", then the last argument can be a "))
+             _
+             (? (weak-string-match " struct or an "))
+             _
+             (? (weak-string-match ", but if the "))
+             _
+             (? (weak-string-match " is "))
+             _
+             (list 'span _ "solid")
+             " or " 
+             (list 'span _ "\"solid\"")
+             (? (weak-string-match ", then the last argument must be an "))
+             _
+             "."
              rest ...)
        (walk rest)]
       [(list f r ...)
