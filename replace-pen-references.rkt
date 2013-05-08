@@ -8,12 +8,13 @@
 ;; This is meant to remove the references to "pens" in the documentation
 ;; as WeScheme does not currently support them.
 (define (replace-pen-references an-sexp)
-  (remove-scale-pen-sizes-note
-   (remove-outline-pen-note
-    (remove-shape-bounding-note
-     (remove-or-c-pen-color-contract 
-      (remove-pen-or-color-references 
-       (sexp-normalize an-sexp)))))))
+  (remove-pen-examples
+   (remove-scale-pen-sizes-note
+    (remove-outline-pen-note
+     (remove-shape-bounding-note
+      (remove-or-c-pen-color-contract 
+       (remove-pen-or-color-references 
+        (sexp-normalize an-sexp))))))))
 
 
 (define (remove-pen-or-color-references an-sexp)
@@ -236,4 +237,31 @@
       [(list)
        '()]))
 
+  (deep-walk-child-elts walk an-sexp))
+
+
+(define (remove-pen-examples an-sexp)
+  (define (walk elts)
+    (match elts
+      [(list 
+        (and X 
+             (list tr _ ...
+                   (list td _ ...
+                         (list 'table _ ...
+                               (list 'tr _ ...
+                                     (list 'td _ ... 
+                                           (list 'span _ ...
+                                                 (list 'a _ ... "make-pen" _ ...))
+                                           _ ...)
+                                     _ ...)
+                               _ ...)
+                         _ ...)
+                   _ ...))
+        (and Y (list 'tr _ ...))
+        rest ...)
+       (walk rest)]
+      [(list f r ...)
+       (cons f (walk r))]
+      [(list)
+       '()]))
   (deep-walk-child-elts walk an-sexp))
